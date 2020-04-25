@@ -1,11 +1,11 @@
 #!/bin/bash
 
+set -e
+
 if [ "$1" = "purge" ]; then
-    sed -i -e 'g/^password/d' /etc/pam.d/password
-    update-rc.d vyatta-config-reboot-params remove
+	systemctl disable vyatta-config-reboot-params.service
+	systemctl disable vyos-intfwatchd.service
+	systemctl disable ec2-fetch-ssh-public-key.service
 fi
 
-# Local Variables:
-# mode: shell-script
-# sh-indentation: 4
-# End:
+exit 0

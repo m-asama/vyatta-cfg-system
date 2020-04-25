@@ -23,9 +23,12 @@ debian/vyatta-cfg-system
 debian/vyatta-cfg-system.postinst
 debian/*.log
 debian/*.substvars
+debian/.debhelper/
+debian/changelog.*
 INSTALL
 Makefile.in
 Makefile
 src/valid_address
 src/local_ip
 src/hypervisor_vendor
+generated-templates

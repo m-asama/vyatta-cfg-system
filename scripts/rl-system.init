@@ -142,6 +142,12 @@ set_ipv6_params ()
 	    echo 0 > $d/$p
 	done
     done
+
+    # Disable IPv6 autoconf
+    for i in /proc/sys/net/ipv6/conf/*
+    do
+	echo 0 > $i/autoconf
+    done
 }
 
 setup_ntp_config_file () {
@@ -184,8 +190,8 @@ start () {
     chmod 775 /var/run/vyatta /var/log/vyatta
 
     update_interface_config
-    create_ssh_host_keys || \
-	log_failure_msg "can't initialize ssh host keys"
+#    create_ssh_host_keys || \
+#	log_failure_msg "can't initialize ssh host keys"
     clear_or_override_config_files || \
 	log_failure_msg "can\'t reset config files"
     setup_ntp_config_file
@@ -194,7 +200,7 @@ start () {
 	log_failure_msg "can\'t add serial interfaces"
 
     set_ipv6_params
-    security_reset
+#    security_reset
 
     update_version_info
 
@@ -215,7 +221,7 @@ start () {
     fi
 
     ## Clear out apt config file--it will be filled in by config load
-    empty /etc/apt/sources.list
+#    empty /etc/apt/sources.list
 
     # remove any interface stat clears
     rm -f /var/run/vyatta/*.stats
