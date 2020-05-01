@@ -50,7 +50,15 @@ restart_systemd_resolved () {
 system_nameservers () {
     action=$1
     nameserver=$2
-    currents=$(grep ^DNS= /run/systemd/resolved.conf.d/vyos-cli.conf | cut -d= -f2)
+    resolvedconfd="/etc/systemd/resolved.conf.d"
+    resolvedconf="${resolvedconfd}/vyos-cli.conf"
+    if [ ! -d $resolvedconfd ]; then
+        mkdir -p $resolvedconfd
+    fi
+    if [ ! -f $resolvedconf ]; then
+        touch $resolvedconf
+    fi
+    currents=$(grep ^DNS= $resolvedconf | cut -d= -f2)
     nameservers=()
     for current in $currents; do
         if [ $nameserver != $current ]; then
@@ -60,9 +68,9 @@ system_nameservers () {
     if [ "$action" = "update" ]; then
         nameservers+=($nameserver)
     fi
-    echo "[Resolve]" > /run/systemd/resolved.conf.d/vyos-cli.conf.tmp
-    echo "DNS=${nameservers[@]}" >> /run/systemd/resolved.conf.d/vyos-cli.conf.tmp
-    mv -f /run/systemd/resolved.conf.d/vyos-cli.conf.tmp /run/systemd/resolved.conf.d/vyos-cli.conf
+    echo "[Resolve]" > ${resolvedconf}.tmp
+    echo "DNS=${nameservers[@]}" >> ${resolvedconf}.tmp
+    mv -f ${resolvedconf}.tmp $resolvedconf
     restart_systemd_resolved
     restart_dnsmasq
     restart_ntp
@@ -87,7 +95,7 @@ case "$1" in
             print_usage
             exit 1
         fi
-        system_nameserver $1 $2
+        system_nameservers $1 $2
         exit 0
         ;;
 

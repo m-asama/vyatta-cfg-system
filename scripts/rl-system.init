@@ -88,7 +88,8 @@ clear_or_override_config_files ()
 {
     for conf in snmp/snmpd.conf snmp/snmptrapd.conf snmp/snmp.conf \
         keepalived/keepalived.conf \
-        ipvsadm.rules default/ipvsadm resolv.conf
+        ipvsadm.rules default/ipvsadm resolv.conf \
+        systemd/resolved.conf.d/vyos-cli.conf
     do
 	if [ -s /etc/$conf ] ; then
 	    empty /etc/$conf
