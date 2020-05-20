@@ -52,6 +52,7 @@ sub dnsforwarding_get_constants {
     $output .= "log-facility=/var/log/dnsmasq.log\n";
     $output .= "no-poll\n";
     $output .= "edns-packet-max=4096\n";
+    $output .= "bind-interfaces\n";
     system("rm -f /var/log/dnsmasq.log; touch /var/log/dnsmasq.log");
     return $output;
 }
@@ -93,9 +94,20 @@ sub dnsforwarding_get_values {
     }
 
     if (@listen_interfaces != 0) {
-       foreach my $interface (@listen_interfaces) {
-          $output .= "interface=$interface\n";
-       }
+	my $lacount = 0;
+	foreach my $interface (@listen_interfaces) {
+	    foreach my $line (`ip address show $interface 2> /dev/null`) {
+		if ($line =~ m/inet(6)? (\S+)\/\d+ .*scope.*global/) {
+		    $output .= "listen-address=$2\n";
+		    $lacount++;
+		}
+	    }
+	}
+	if ($lacount == 0) {
+	    foreach my $interface (@listen_interfaces) {
+		$output .= "interface=$interface\n";
+	    }
+	}
     }
 
     if (defined $cache_size) {
@@ -144,18 +156,19 @@ sub dnsforwarding_get_values {
 
     if (@use_dhcp_nameservers != 0) {
 	$use_dnsmasq_conf = 1;
-        foreach my $interface (@use_dhcp_nameservers) {
-           my $dhcp_nameserver_count=`grep nameserver /etc/resolv.conf.dhclient-new-$interface 2>/dev/null | wc -l`;
-           if ($dhcp_nameserver_count > 0) {
-	       my @dhcp_nameservers = `grep nameserver /etc/resolv.conf.dhclient-new-$interface`;
-	       for my $each_nameserver (@dhcp_nameservers) {
-	          my @nameserver = split(/ /, $each_nameserver, 2);
-                  my $ns = $nameserver[1];
-                  chomp $ns;
-                  $output .= "server=$ns\t# dhcp $interface\n";
-               }
-           } 
-        }
+	foreach my $interface (@use_dhcp_nameservers) {
+	    my @dhcp_nameservers = `grep "^DNS=" /run/systemd/resolved.conf.d/isc-dhcp-v4-$interface.conf 2>/dev/null`;
+	    if (@dhcp_nameservers > 0) {
+		for my $each_nameserver (@dhcp_nameservers) {
+		    $each_nameserver =~ s/^DNS=\s*//;
+		    $each_nameserver =~ s/\s*$//;
+		    my @nameserver = split(/\s+/, $each_nameserver);
+		    foreach my $ns (@nameserver) {
+			$output .= "server=$ns\t# dhcp $interface\n";
+		    }
+		}
+	    }
+	}
     }
 
     if ($use_dnsmasq_conf == 1) {
