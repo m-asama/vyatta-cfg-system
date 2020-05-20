@@ -33,6 +33,7 @@ bin_SCRIPTS += scripts/vyatta-functions
 bin_SCRIPTS += scripts/restricted-shell
 
 sbin_SCRIPTS += scripts/check_file_in_config_dir
+sbin_SCRIPTS += scripts/dsa.init
 sbin_SCRIPTS += scripts/rl-system.init
 sbin_SCRIPTS += scripts/install-system
 sbin_SCRIPTS += scripts/vyatta-grub-setup
