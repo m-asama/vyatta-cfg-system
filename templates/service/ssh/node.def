@@ -1,0 +1,10 @@
+priority: 500 # After syslog and logins
+help: Secure SHell (SSH) protocol
+delete:sudo systemctl stop ssh
+       sudo sh -c "echo 'SSHD_OPTS=' > /etc/default/ssh"
+end: if [ -z "$VAR(port/@)" ]; then exit 0; fi
+     KEYS=$(ls /etc/ssh/ssh_host_*_key 2> /dev/null)
+     if [ -z "$KEYS" ]; then sudo dpkg-reconfigure openssh-server; fi
+     STR="SSHD_OPTS=\"-p $VAR(port/@)\""
+     sudo sh -c "echo '$STR' > /etc/default/ssh"
+     sudo systemctl restart ssh
