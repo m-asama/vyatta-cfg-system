@@ -20,11 +20,6 @@ if [ "$model" = "Bananapi BPI-R2" ]; then
 	ip link set lan2 name eth3
 	ip link set lan3 name eth4
 	ip link set dsa up
-	ip link set eth0 up
-	ip link set eth1 up
-	ip link set eth2 up
-	ip link set eth3 up
-	ip link set eth4 up
 fi
 
 exit 0
