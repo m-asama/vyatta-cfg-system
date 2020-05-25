@@ -144,6 +144,12 @@ set_ipv6_params ()
 	done
     done
 
+    # Set accept_ra -> 2
+    for i in /proc/sys/net/ipv6/conf/*
+    do
+	echo 2 > $i/accept_ra
+    done
+
     # Disable IPv6 autoconf
     for i in /proc/sys/net/ipv6/conf/*
     do
