@@ -3,9 +3,9 @@
 set -e
 
 if [ "$1" = "purge" ]; then
-	systemctl disable vyatta-config-reboot-params.service
-	systemctl disable vyos-intfwatchd.service
-	systemctl disable ec2-fetch-ssh-public-key.service
+	systemctl disable vyatta-config-reboot-params.service || true
+	systemctl disable vyos-intfwatchd.service || true
+	systemctl disable ec2-fetch-ssh-public-key.service || true
 fi
 
 exit 0
