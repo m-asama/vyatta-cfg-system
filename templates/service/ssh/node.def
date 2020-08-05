@@ -1,4 +1,4 @@
-priority: 500 # After syslog and logins
+priority: 999 # After syslog and logins
 help: Secure SHell (SSH) protocol
 delete:sudo systemctl stop ssh
        sudo sh -c "echo 'SSHD_OPTS=' > /etc/default/ssh"
